@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use('/admin', adminRoutes);
-app.use('/app', appRoutes);
+app.use('/', appRoutes);
 
 /* Default error handlers */
 app.all('*', (req, res, next) => {
@@ -46,22 +46,21 @@ app.use((err, req, res, next) => {
 });
 /* Default error handlers */
 
-const mongoClient = new MongoClient(config.db.mongo.connection);
-
 console.log('--> Connecting to mongodb server');
-mongoClient.connect()
-    .then(() => {
+MongoClient.connect(config.db.mongo.connection)
+    .then((db) => {
+        app.locals.db = db.db('cart');
         console.log('-->Connected to mongodb server');
         console.log('');
-        console.log('--> Starting server');
 
-        app.listen(config.server.listen_port, config.server.listen_host, () => {
+        console.log('--> Starting server');
+        return app.listen(config.server.listen_port, config.server.listen_host, () => {
             console.log(`*************************************************************`);
             console.log(`*   Server started successfully, listening on: ${config.server.listen_host}:${config.server.listen_port}`);
             console.log(`*************************************************************`);
         });
-    }).catch(err => {
-        console.log('--> Error while starting server', err);
-        mongoClient.close();
+    }).catch((err) => {
+        console.log('--> Error while starting', err);
+        //mongoClient.close();
         process.exit(1);
     });

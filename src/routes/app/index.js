@@ -1,14 +1,17 @@
 import {Router} from "express";
 import ValidationError from "../../modules/ValidationError.js";
-import indexController from '../../controllers/app/index.js';
+import indexController from '../../controllers/app/indexController.js';
+import productoController from '../../controllers/app/productoController.js';
+import pedidoController from '../../controllers/app/pedidoController.js';
 
 const router = Router();
 
-router.get('/job_posting', indexController.indexJobPostings);
-router.get('/job_posting/:id', indexController.getJobPosting);
-router.post('/application_request', indexController.storeApplicationRequest);
-router.post('/application', indexController.storeApplication);
-router.post('/test', indexController.test);
+router.get('/productos', productoController.index);
+router.get('/productos/:id', productoController.get);
+router.post('/pedidos', pedidoController.store);
+router.get('/pedidos', pedidoController.index);
+router.get('/pedidos/:id', pedidoController.get);
+router.get('/test', indexController.test);
 
 /* Route error handlers */
 router.all('*', (req, res, next) => {

@@ -17,7 +17,7 @@ services:
     volumes:
       - ./:/var/www/cart-backend
     ports:
-      - "${SERVER_HOST_PORT:-3000}:8085"
+      - "${SERVER_HOST_PORT:-3000}:3000"
     depends_on:
        - db
     working_dir: /var/www/cart-backend
