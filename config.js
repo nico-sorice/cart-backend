@@ -1,7 +1,8 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
+
 dotenv.config({silent: true});
 
-module.exports = {
+export default {
     jwt_secret: process.env.JWT_SECRET,
     server: {
         listen_port: process.env.PORT || process.env.SERVER_LISTEN_PORT || '3000',

@@ -1,4 +1,4 @@
-module.exports = class ValidationError extends Error {
+class ValidationError extends Error {
     constructor(message, errors = []) {
         super(message);
         this._errors = errors;
@@ -8,3 +8,5 @@ module.exports = class ValidationError extends Error {
         return this._errors;
     }
 }
+
+export default ValidationError;

@@ -1,6 +1,5 @@
-const path = require('path');
-const expressValidator = require('express-validator');
-const ValidationError = require(path.join(__dirname, '..', 'modules', 'ValidationError'));
+import expressValidator from 'express-validator';
+import ValidationError from "../modules/ValidationError.js";
 
 const checkErrorMiddleware = (req, res, next) => {
     const errors = expressValidator.validationResult(req);
@@ -12,7 +11,7 @@ const checkErrorMiddleware = (req, res, next) => {
     next();
 };
 
-module.exports.validate = (callback) => {
+const validate = (callback) => {
     const userValidationMiddlewares = callback(expressValidator);
 
     return [
@@ -20,3 +19,5 @@ module.exports.validate = (callback) => {
         checkErrorMiddleware,
     ];
 };
+
+export default validate;

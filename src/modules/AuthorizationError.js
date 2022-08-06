@@ -1,3 +1,5 @@
-module.exports = class AuthorizationError extends Error {
+class AuthorizationError extends Error {
 
 }
+
+export default AuthorizationError;

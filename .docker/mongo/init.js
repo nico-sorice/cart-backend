@@ -1,11 +1,11 @@
 db.createUser(
     {
-        user: "preciosrotos",
-        pwd: "preciosrotos",
+        user: "cart",
+        pwd: "cart",
         roles: [
             {
                 role: "readWrite",
-                db: "precios"
+                db: "cart"
             }
         ]
     }

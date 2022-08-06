@@ -2,25 +2,25 @@ version: '3.5'
 
 networks:
   backend:
-    name: "${NETWORK:-preciosrotos}"
+    name: "${NETWORK:-cart-backend}"
 
 volumes:
   mongo:
-    name: preciosrotos_mongo
+    name: cart-backend_mongo
 
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: preciosrotos_app
+    container_name: cart-backend_app
     volumes:
-      - .:/var/www/preciosrotos
+      - ./:/var/www/cart-backend
     ports:
       - "${SERVER_HOST_PORT:-3000}:8085"
     depends_on:
        - db
-    working_dir: /var/www/preciosrotos
+    working_dir: /var/www/cart-backend
     user: 1000:1000
     command: ["node", '.']
     networks:
@@ -28,14 +28,14 @@ services:
 
   db:
     image: mongo:5.0.0
-    container_name: preciosrotos_db
+    container_name: cart-backend_db
     command: mongod --auth
     restart: always
     volumes:
       - mongo:/data/db
       - .docker/mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
     environment:
-      MONGO_INITDB_DATABASE: precios
+      MONGO_INITDB_DATABASE: cart
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     networks:

@@ -1,20 +1,22 @@
-const path = require('path');
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-//const multer = require('multer');
-const config = require(path.join(__dirname, 'config'));
-const ValidationError = require(path.join(__dirname, 'src', 'modules', 'ValidationError'));
-const AuthorizationError = require(path.join(__dirname, 'src', 'modules', 'AuthorizationError'));
-const cors = require(path.join(__dirname, 'src', 'middleware', 'cors'));
+import {MongoClient} from 'mongodb';
+import express from 'express';
+import bodyParser from 'body-parser';
+import ValidationError from './src/modules/ValidationError.js';
+import AuthorizationError from './src/modules/AuthorizationError.js';
+import AuthenticationError from "./src/modules/AuthenticationError.js";
+import adminRoutes from './src/routes/admin/index.js';
+import appRoutes from './src/routes/app/index.js';
+import * as cors from './src/middleware/cors.js';
+import config from "./config.js";
+
 const app = express();
 
+app.use(cors.unrestricted);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cors.unrestricted);
 
-app.use('/admin', require(path.join(__dirname, 'src', 'routes', 'admin')));
-app.use('/app', require(path.join(__dirname, 'src', 'routes', 'app')));
+app.use('/admin', adminRoutes);
+app.use('/app', appRoutes);
 
 /* Default error handlers */
 app.all('*', (req, res, next) => {
@@ -27,35 +29,39 @@ app.use((err, req, res, next) => {
             message: err.message,
             errors: err.errors,
         });
-    }else if(err instanceof AuthorizationError){
+    }else if(err instanceof AuthenticationError){
         return res.status(401).json({
-            message: "Authorization error",
+            message: "Error de autenticacion",
+        });
+    }else if(err instanceof AuthorizationError){
+        return res.status(403).json({
+            message: "Error de autorizacion",
         });
     }
 
     return res.status(500).json({
-        message: 'An error ocurred!',
+        message: '¡Ocurrio un error!',
         error: process.env.NODE_ENV === 'production' ? '-' : err.stack,
     });
 });
 /* Default error handlers */
 
-mongoose.connect(config.db.mongo.connection, {useNewUrlParser: true, useUnifiedTopology: true})
-    .then(
-        () => {
-            console.log('--> Starting server');
+const mongoClient = new MongoClient(config.db.mongo.connection);
 
-            app.listen(config.server.listen_port, config.server.listen_host, () => {
-                console.log(`*************************************************************`);
-                console.log(`*   Server started successfully, listening on: ${config.server.listen_host}:${config.server.listen_port}`);
-                console.log(`*************************************************************`);
-            });
-        },
-        mongoErr => {
-            console.log(`--> Error connecting to mongo at "${config.db.mongo.connection}"`, mongoErr);
-        }
-    )
-    .catch(err => {
+console.log('--> Connecting to mongodb server');
+mongoClient.connect()
+    .then(() => {
+        console.log('-->Connected to mongodb server');
+        console.log('');
+        console.log('--> Starting server');
+
+        app.listen(config.server.listen_port, config.server.listen_host, () => {
+            console.log(`*************************************************************`);
+            console.log(`*   Server started successfully, listening on: ${config.server.listen_host}:${config.server.listen_port}`);
+            console.log(`*************************************************************`);
+        });
+    }).catch(err => {
         console.log('--> Error while starting server', err);
+        mongoClient.close();
         process.exit(1);
     });

@@ -1,0 +1,1 @@
+sudo docker run -it -v "$(pwd)":/var/www node:18-alpine /bin/sh

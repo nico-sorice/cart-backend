@@ -1,10 +1,5 @@
-const path = require('path');
-const Application = require(path.join(__dirname, '..', '..', 'models', 'application'));
-const JobPosting = require(path.join(__dirname, '..', '..', 'models', 'jobPosting'));
-const File = require(path.join(__dirname, '..', '..', 'models', 'file'));
-const User = require(path.join(__dirname, '..', '..', 'models', 'user'));
-const multer = require('multer');
-const requestValidator = require(path.join(__dirname, '..', '..', 'middleware', 'requestValidator'));
+import validateRequest from "../../middleware/requestValidator.js";
+import multer from 'multer';
 
 const jobPostingTransformer = (jobPosting) => {
     return {
@@ -18,7 +13,7 @@ const jobPostingTransformer = (jobPosting) => {
     };
 }
 
-module.exports.indexJobPostings = (req, res, next) => {
+const indexJobPostings = (req, res, next) => {
     return JobPosting.find({}).exec()
         .then(jobPostings => {
             res.status(200).json({
@@ -28,7 +23,7 @@ module.exports.indexJobPostings = (req, res, next) => {
         .catch(next);
 };
 
-module.exports.getJobPosting = (req, res, next) => {
+const getJobPosting = (req, res, next) => {
     return JobPosting.findById(req.params.id)
         .exec()
         .then(jobPosting => {
@@ -43,8 +38,8 @@ module.exports.getJobPosting = (req, res, next) => {
         .catch(next);
 };
 
-module.exports.storeApplicationRequest = [
-    requestValidator.validate(({check}) => [
+const storeApplicationRequest = [
+    validateRequest(({check}) => [
         check('job_posting_id', 'Este campo es obligatorio y debe ser un ID valido').not().isEmpty().isLength({max: 24, min: 24}),
     ]),
     (req, res, next) => {
@@ -76,7 +71,7 @@ module.exports.storeApplicationRequest = [
     }
 ];
 
-module.exports.storeApplication = [
+const storeApplication = [
     /* Upload */
     multer({
         storage: multer.memoryStorage(),
@@ -89,7 +84,7 @@ module.exports.storeApplication = [
     ]),
     /* Upload */
     /* Validation */
-    requestValidator.validate(({check, checkSchema}) => [
+    validateRequest(({check, checkSchema}) => [
         check('request_code', 'Este campo es obligatorio').not().isEmpty(),
         check('first_name', 'Este campo es obligatorio y debe tener entre 2 y 40 caracteres').not().isEmpty().isLength({min: 2, max: 40}),
         check('last_name', 'Este campo es obligatorio y debe tener entre 2 y 40 caracteres').not().isEmpty().isLength({min: 2, max: 40}),
@@ -146,7 +141,7 @@ module.exports.storeApplication = [
     },
 ];
 
-module.exports.test = [
+const test = [
     (req, res, next) => {
         res.status(200).json({
             message: 'Támo adentro.',
@@ -173,3 +168,12 @@ module.exports.test = [
          */
     }
 ];
+
+export default {
+    jobPostingTransformer,
+    indexJobPostings,
+    getJobPosting,
+    storeApplicationRequest,
+    storeApplication,
+    test
+};

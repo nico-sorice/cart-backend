@@ -1,5 +1,5 @@
-class AuthorizationError extends Error {
+class AuthenticationError extends Error {
 
 }
 
-export default AuthorizationError;
+export default AuthenticationError;

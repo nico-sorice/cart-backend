@@ -1,26 +1,29 @@
-const path = require('path');
-const router = require('express').Router();
+import { Router } from 'express';
+import applicationController from '../../controllers/admin/application.js';
+import jobPostingController from '../../controllers/admin/jobPosting.js';
+import authController from '../../controllers/admin/auth.js';
+import {
+    required as authRequiredMiddleware,
+    handle as authHandleMiddleware,
+} from '../../middleware/auth.js';
 
-const auth = require(path.join(__dirname, '..', '..', 'middleware', 'auth'));
+const router = Router();
 
-const applicationController = require(path.join(__dirname, '..', '..', 'controllers', 'admin', 'application'));
-const jobPostingController = require(path.join(__dirname, '..', '..', 'controllers', 'admin', 'jobPosting'));
-const authController = require(path.join(__dirname, '..', '..', 'controllers', 'admin', 'auth'));
-
-router.use(auth.handle);
+router.use(authHandleMiddleware);
 
 router.post('/auth/login', authController.login);
 router.post('/auth/register', authController.register);
-router.get('/auth/user', auth.required, authController.getUser);
+router.get('/auth/user', authRequiredMiddleware, authController.getUser);
 
-router.get('/application', auth.required, applicationController.index);
-router.get('/application/:id', auth.required, applicationController.get);
-router.get('/application/:id/resume', auth.required, applicationController.downloadResume);
+router.get('/application', authRequiredMiddleware, applicationController.index);
+router.get('/application/:id', authRequiredMiddleware, applicationController.get);
+router.get('/application/:id/resume', authRequiredMiddleware, applicationController.downloadResume);
 
-router.get('/job_posting', auth.required, jobPostingController.index);
-router.get('/job_posting/:id', auth.required, jobPostingController.get);
-router.post('/job_posting', auth.required, jobPostingController.store);
-router.put('/job_posting/:id', auth.required, jobPostingController.update);
-router.delete('/job_posting/:id', auth.required, jobPostingController.delete);
+router.get('/job_posting', authRequiredMiddleware, jobPostingController.index);
+router.get('/job_posting/:id', authRequiredMiddleware, jobPostingController.get);
+router.post('/job_posting', authRequiredMiddleware, jobPostingController.store);
+router.put('/job_posting/:id', authRequiredMiddleware, jobPostingController.update);
+router.delete('/job_posting/:id', authRequiredMiddleware, jobPostingController.destroy);
 
-module.exports = router;
+export default router;
+

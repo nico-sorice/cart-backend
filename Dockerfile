@@ -1,6 +1,10 @@
-FROM node:14.16-alpine
-WORKDIR /var/www/preciosrotos
+FROM node:18-alpine
 
-RUN apk add chromium
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
+COPY package.json ./
 RUN npm install
+COPY . /usr/src/app/
+EXPOSE 3000
+CMD [ "npm", "start"]

@@ -1,11 +1,9 @@
-const path = require('path');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const config = require(path.join(__dirname, '..', '..', '..', 'config'));
-const User = require(path.join(__dirname, '..', '..', 'models', 'user'));
-const requestValidator = require(path.join(__dirname, '..', '..', 'middleware', 'requestValidator'));
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import config from './../../../config.js';
+import validateRequest from '../../middleware/requestValidator.js';
 
-module.exports.getUser = [
+const getUser = [
     (req, res, next) => {
         return res.status(200).json({
             authData: req.auth.data,
@@ -13,9 +11,9 @@ module.exports.getUser = [
     }
 ];
 
-module.exports.login = [
+const login = [
     /* Validation */
-    requestValidator.validate(({body}) => [
+    validateRequest(({body}) => [
         body('email').not().isEmpty().isEmail().isLength({max: 255}),
         body('password').not().isEmpty().isLength({min: 8, max: 255}),
     ]),
@@ -47,9 +45,9 @@ module.exports.login = [
     }
 ];
 
-module.exports.register = [
+const register = [
     /* Validation */
-    requestValidator.validate(({body}) => [
+    validateRequest(({body}) => [
         body('email').not().isEmpty()
             .isEmail()
             .isLength({max: 255})
@@ -81,3 +79,9 @@ module.exports.register = [
             .catch(next);
     }
 ];
+
+export default {
+    getUser,
+    login,
+    register
+};

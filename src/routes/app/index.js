@@ -1,7 +1,8 @@
-const path = require('path');
-const router = require('express').Router();
-const ValidationError = require(path.join(__dirname, '..', '..', 'modules', 'ValidationError'));
-const indexController = require(path.join(__dirname, '..', '..', 'controllers', 'app', 'index'));
+import {Router} from "express";
+import ValidationError from "../../modules/ValidationError.js";
+import indexController from '../../controllers/app/index.js';
+
+const router = Router();
 
 router.get('/job_posting', indexController.indexJobPostings);
 router.get('/job_posting/:id', indexController.getJobPosting);
@@ -25,10 +26,10 @@ router.use((err, req, res, next) => {
     }
 
     res.status(500).json({
-        message: 'Ocurrio un error!',
+        message: '¡Ocurrio un error!',
         error: process.env.NODE_ENV === 'production' ? '-' : err.stack,
     });
 });
 /* Route error handlers */
 
-module.exports = router;
+export default router;

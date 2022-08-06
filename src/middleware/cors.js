@@ -1,4 +1,4 @@
-module.exports.configure = (options = {}) => {
+export const configure = (options = {}) => {
     const {
         allowedOrigins = [],
         allowedMethods = [],
@@ -24,7 +24,7 @@ module.exports.configure = (options = {}) => {
     };
 }
 
-module.exports.unrestricted = module.exports.configure({
+export const unrestricted = configure({
     allowedOrigins: ['*'],
     allowedMethods: ['*'],
     allowedHeaders: ['*'],

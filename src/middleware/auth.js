@@ -1,9 +1,8 @@
-const path = require('path');
-const jwt = require('jsonwebtoken');
-const config = require(path.join(__dirname, '..', '..', 'config'));
-const AuthorizationError = require(path.join(__dirname, '..', 'modules', 'AuthorizationError'));
+import jwt from 'jsonwebtoken';
+import AuthorizationError from "../modules/AuthorizationError.js";
+import config from '../../config.js';
 
-module.exports.required = (req, res, next) => {
+export const required = (req, res, next) => {
     if(!req.auth.data){
         throw new AuthorizationError('User not logged in');
     }else{
@@ -11,7 +10,7 @@ module.exports.required = (req, res, next) => {
     }
 };
 
-module.exports.handle = (req, res, next) => {
+export const handle = (req, res, next) => {
     const token = req.get('Authorization') ? req.get('Authorization').split(' ')[1] : null;
     let decodedToken;
 
@@ -30,4 +29,9 @@ module.exports.handle = (req, res, next) => {
     }
 
     next();
+};
+
+export default {
+    required,
+    handle
 };

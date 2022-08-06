@@ -1,8 +1,6 @@
-const path = require('path');
-const JobPosting = require(path.join(__dirname, '..', '..', 'models', 'jobPosting'));
-const requestValidator = require(path.join(__dirname, '..', '..', 'middleware', 'requestValidator'));
+import validateRequest from '../../middleware/requestValidator.js';
 
-module.exports.index = (req, res, next) => {
+const index = (req, res, next) => {
     return JobPosting.find({user: req.auth.data.userId})
         .exec()
         .then(jobPostings => {
@@ -13,7 +11,7 @@ module.exports.index = (req, res, next) => {
         .catch(next);
 };
 
-module.exports.get = (req, res, next) => {
+const get = (req, res, next) => {
     JobPosting.findOne({_id: req.params.id})
         .exec()
         .then(jobPosting => {
@@ -22,8 +20,8 @@ module.exports.get = (req, res, next) => {
         .catch(next);
 };
 
-module.exports.store = [
-    requestValidator.validate(({check}) => [
+const store = [
+    validateRequest(({check}) => [
         check('title').not().isEmpty().isLength({max: 50, min: 10}),
         check('description').not().isEmpty().isLength({max: 5000, min: 30}),
         check('requirements').not().isEmpty().isArray(),
@@ -49,7 +47,7 @@ module.exports.store = [
     }
 ];
 
-module.exports.update = (req, res, next) => {
+const update = (req, res, next) => {
     return JobPosting.findOneAndUpdate({user: req.auth.data.userId, _id: req.params.id}, {
         title: req.body.title,
         description: req.body.description,
@@ -65,11 +63,19 @@ module.exports.update = (req, res, next) => {
         .catch(next);
 };
 
-module.exports.delete = (req, res, next) => {
+const destroy = (req, res, next) => {
     return JobPosting.deleteOne({user: req.auth.data.userId,_id: req.params.id})
         .exec()
         .then(() => {
             res.status(200).json({});
         })
         .catch(next);
+};
+
+export default {
+    index,
+    get,
+    store,
+    update,
+    destroy,
 };
