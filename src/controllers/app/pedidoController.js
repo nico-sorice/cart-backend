@@ -31,7 +31,7 @@ const store = [
                 .isArray({min: 1}).withMessage('Items debe tener al menos un elemento'),
             body('items.*.producto_id')
                 .not().isEmpty().withMessage('El ID de producto es obligatorio')
-                .custom(value => !ObjectId.isValid(value) || Promise.reject()).withMessage('El ID de producto es invalido')
+                .custom(value => ObjectId.isValid(value) || Promise.reject()).withMessage('El ID de producto es invalido')
             ,
             //TODO: Check that the IDs exist
             body('items.*.cantidad')
