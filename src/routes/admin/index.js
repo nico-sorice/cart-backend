@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import applicationController from '../../controllers/admin/application.js';
-import jobPostingController from '../../controllers/admin/jobPosting.js';
+import productoController from '../../controllers/admin/productoController.js';
 import authController from '../../controllers/admin/auth.js';
 import {
     required as authRequiredMiddleware,
@@ -12,18 +11,14 @@ const router = Router();
 router.use(authHandleMiddleware);
 
 router.post('/auth/login', authController.login);
-router.post('/auth/register', authController.register);
+//router.post('/auth/register', authController.register);
 router.get('/auth/user', authRequiredMiddleware, authController.getUser);
 
-router.get('/application', authRequiredMiddleware, applicationController.index);
-router.get('/application/:id', authRequiredMiddleware, applicationController.get);
-router.get('/application/:id/resume', authRequiredMiddleware, applicationController.downloadResume);
-
-router.get('/job_posting', authRequiredMiddleware, jobPostingController.index);
-router.get('/job_posting/:id', authRequiredMiddleware, jobPostingController.get);
-router.post('/job_posting', authRequiredMiddleware, jobPostingController.store);
-router.put('/job_posting/:id', authRequiredMiddleware, jobPostingController.update);
-router.delete('/job_posting/:id', authRequiredMiddleware, jobPostingController.destroy);
+router.get('/productos', authRequiredMiddleware, productoController.index);
+router.get('/productos/:id', authRequiredMiddleware, productoController.get);
+router.post('/productos', authRequiredMiddleware, productoController.store);
+router.put('/productos/:id', authRequiredMiddleware, productoController.update);
+router.delete('/productos/:id', authRequiredMiddleware, productoController.destroy);
 
 export default router;
 
