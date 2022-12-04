@@ -12,17 +12,43 @@ const productoTransformer = (producto) => {
     };
 }
 
-const index = (req, res, next) => {
-    return req.app.locals.db.collection('productos')
-        .find({})
-        .toArray()
-        .then((productos) => {
-            res.status(200).json({
-                productos: productos.map(productoTransformer),
-            });
-        })
-        .catch(next);
-};
+const index =  [
+    validateRequest(({query}) => [
+        query('pagina')
+            .isInt({min: 1}).withMessage('La pagina debe ser un numero entero igual o mayor a 1')
+            .optional(),
+        query('cantidadPorPagina')
+            .isInt({min: 1, max: 50}).withMessage('La cantidad por pagina debe ser un entero entre 1 y 50')
+            .optional(),
+    ]),
+    (req, res, next) => {
+        const parametrosPaginado = {
+            pagina: Number(req.query.pagina || 1),
+            cantidadPorPagina: Number(req.query.cantidadPorPagina || 3),
+        };
+
+        return req.app.locals.db.collection('productos')
+            .find({})
+            .toArray()
+            .then((productos) => {
+                const productosPaginados = productos.slice(
+                    parametrosPaginado.cantidadPorPagina * (parametrosPaginado.pagina - 1),
+                    parametrosPaginado.cantidadPorPagina * parametrosPaginado.pagina
+                );
+
+                res.status(200).json({
+                    productos: productosPaginados.map(productoTransformer),
+                    paginado: {
+                        ...parametrosPaginado,
+                        cantidad: productosPaginados.length,
+                        total: productos.length,
+                        cantidadDePaginas: Math.ceil(productos.length / parametrosPaginado.cantidadPorPagina)
+                    }
+                });
+            })
+            .catch(next);
+    }
+];
 
 const get = (req, res, next) => {
     if(!ObjectId.isValid(req.params.id)){
