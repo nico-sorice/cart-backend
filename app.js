@@ -6,6 +6,7 @@ import AuthorizationError from './src/modules/AuthorizationError.js';
 import AuthenticationError from "./src/modules/AuthenticationError.js";
 import adminRoutes from './src/routes/admin/index.js';
 import appRoutes from './src/routes/app/index.js';
+import noteRoutes from './src/routes/notes/index.js';
 import * as cors from './src/middleware/cors.js';
 import config from "./config.js";
 
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use('/admin', adminRoutes);
+app.use('/keep', noteRoutes);
 app.use('/', appRoutes);
 
 /* Default error handlers */
